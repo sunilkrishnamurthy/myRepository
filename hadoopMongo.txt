@@ -1,0 +1,100 @@
+how to install hadoop
+https://github.com/MuhammadBilalYar/Hadoop-On-Window/wiki/Step-by-step-Hadoop-2.8.0-installation-on-Window-10
+
+---------------------
+hadoop CLI
+https://hadoop.apache.org/docs/r2.4.1/hadoop-project-dist/hadoop-common/FileSystemShell.html
+
+---------------
+sample code, no yarn needed
+hadoop mongodb MapReduce Usage
+https://github.com/mongodb/mongo-hadoop/wiki/MapReduce-Usage
+https://acadgild.com/blog/data-processing-in-mongodb-using-hadoops-map-reduce
+------------------
+
+how to run your code
+hadoop jar -libjars mongo-hadoop-core.jar, mongo-java-driver.jar MyJob.jar <your class name>
+
+-------------------
+hadoop mongo map reduce tutorial
+https://www.tutorialspoint.com/map_reduce/map_reduce_api.htm
+
+-----------
+sample code
+package com.finicspro.processing.excel;
+
+------------
+jars copied into D:\hadoop-2.8.0\share\hadoop\common
+----------------
+delete folder
+D:\hadoop-2.8.0\bin>hadoop fs -rm hadoopMongoTestResult/*
+D:\hadoop-2.8.0\bin>hadoop fs -rmdir hadoopMongoTestResult
+------------
+
+to run the code
+jar -cvfm hadoopTest.jar MANIFEST.MF *
+D:\work\companyconfig\bin\test>copy D:\work\companyconfig\bin\test\hadoopTest.jar D:\hadoop-2.8.0\share\hadoop\common
+hadoop com.finicspro.processing.excel.HadoopMongoTest
+------------------------
+
+mongo input, mongo output example code
+https://stackoverflow.com/questions/19499447/hadoop-hdfs-mapreduce-output-into-mongodb
+-----------------------
+
+tutorials
+https://hadoop.apache.org/docs/stable/hadoop-mapreduce-client/hadoop-mapreduce-client-core/MapReduceTutorial.html
+https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/SingleCluster.html
+https://hadoop.apache.org/docs/stable/hadoop-project-dist/hadoop-common/ClusterSetup.html
+---------------
+
+
+import java.io.IOException;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import com.mongodb.BasicDBObject;
+import com.mongodb.hadoop.util.MongoConfigUtil;
+public class HadoopMongoTest {
+  public static class TokenizerMapper
+       extends Mapper<Object, BasicDBObject, Text, Text>{
+    public void map(Object key, BasicDBObject value, Context context
+                    ) throws IOException, InterruptedException {
+        String id = value.get("_id").toString();
+        String device = value.get("created_at").toString();
+        context.write(new Text(id.toString()),new Text(device.toString()));
+    }
+  }
+  public static class IntSumReducer
+       extends Reducer<Text,Text,Text,Text> {
+    public void reduce(Text key, Iterable<Text> values,
+                       Context context
+                       ) throws IOException, InterruptedException {
+        Text result =  null;
+      for (Text val : values) {
+          result = val;
+      }
+      context.write(key, result);
+    }
+  }
+  public static void main(String[] args) throws Exception {
+    Configuration conf = new Configuration();
+    Job job = Job.getInstance(conf, "word count");
+    MongoConfigUtil.setInputURI(job.getConfiguration(), "mongodb://localhost/Acadgild.user_details");
+    job.setJarByClass(HadoopMongoTest.class);
+    job.setNumReduceTasks(0);
+    job.setMapperClass(TokenizerMapper.class);
+    job.setCombinerClass(IntSumReducer.class);
+    job.setReducerClass(IntSumReducer.class);
+    job.setMapOutputKeyClass(Text.class);
+    job.setMapOutputValueClass(Text.class);
+    job.setInputFormatClass(com.mongodb.hadoop.MongoInputFormat.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(Text.class);
+    FileOutputFormat.setOutputPath(job, new Path("hadoopMongoTestResult"));
+    System.exit(job.waitForCompletion(true) ? 0 : 1);
+  }
+}
