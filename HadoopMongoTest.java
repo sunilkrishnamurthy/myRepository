@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package com.finicspro.processing.excel;
 
 import java.io.*;
@@ -20,7 +19,7 @@ public class HadoopMongoTest {
             FileOutputStream fos = new FileOutputStream("d:\\temp\\map.txt", true);
             fos.write( (key + " " + value + "\n").getBytes());
             fos.close();
-            
+
             System.out.println("inside map ==============>>>>>>>>>" + key + " " + value);
             String name = value.get( "name" ).toString();
             String score = value.get( "score" ).toString();
@@ -37,10 +36,10 @@ public class HadoopMongoTest {
             for ( Text val : values ) {
                 s_res += val.toString();
                 fos.write( (key + " " + val + "\n").getBytes());
-                
+
             }
             context.write( key, new Text(s_res) );
-            
+
             fos.close();
         }
     }
@@ -63,8 +62,8 @@ public class HadoopMongoTest {
         job.setOutputValueClass( Text.class );
         FileOutputFormat.setOutputPath( job, new Path( "hadoopMongoTestResult" ) );
         System.exit( job.waitForCompletion( true ) ? 0 : 1 );
-        
-        
+
+
         // input is mongo, output is also mongo
         // ------------------------------
         /*Configuration conf = new Configuration();
@@ -80,12 +79,12 @@ public class HadoopMongoTest {
         job.setMapOutputValueClass( Text.class );
         job.setInputFormatClass( com.mongodb.hadoop.MongoInputFormat.class );
         job.setOutputFormatClass( com.mongodb.hadoop.MongoOutputFormat.class );
-        
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(BSONWritable.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
-        
+
         System.exit( job.waitForCompletion( true ) ? 0 : 1 );*/
     }
 }
@@ -111,7 +110,7 @@ public class HadoopMongoTest {
             FileOutputStream fos = new FileOutputStream("d:\\temp\\map.txt", true);
             fos.write( (key + " " + value + "\n").getBytes());
             fos.close();
-            
+
             System.out.println("inside map ==============>>>>>>>>>" + key + " " + value);
             String name = value.get( "name" ).toString();
             String score = value.get( "score" ).toString();
@@ -128,10 +127,10 @@ public class HadoopMongoTest {
             for ( Text val : values ) {
                 s_res += val.toString();
                 fos.write( (key + " " + val + "\n").getBytes());
-                
+
             }
             context.write( key, new Text(s_res) );
-            
+
             fos.close();
         }
     }
@@ -154,8 +153,8 @@ public class HadoopMongoTest {
         job.setOutputValueClass( Text.class );
         FileOutputFormat.setOutputPath( job, new Path( "hadoopMongoTestResult" ) );
         System.exit( job.waitForCompletion( true ) ? 0 : 1 );
-        
-        
+
+
         // input is mongo, output is also mongo
         // ------------------------------
         /*Configuration conf = new Configuration();
@@ -171,13 +170,12 @@ public class HadoopMongoTest {
         job.setMapOutputValueClass( Text.class );
         job.setInputFormatClass( com.mongodb.hadoop.MongoInputFormat.class );
         job.setOutputFormatClass( com.mongodb.hadoop.MongoOutputFormat.class );
-        
+
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(BSONWritable.class);
         job.setMapOutputKeyClass(Text.class);
         job.setMapOutputValueClass(Text.class);
-        
+
         System.exit( job.waitForCompletion( true ) ? 0 : 1 );*/
     }
 }
->>>>>>> 6305cb0c7c13b89ea3eaccb81307cde3c1ff4349

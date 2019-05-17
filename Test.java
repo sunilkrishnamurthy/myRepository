@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 package com.finicspro.processing.excel;
 
 import static org.apache.poi.ss.formula.functions.Finance.*;
@@ -18,9 +17,9 @@ import com.monitorjbl.xlsx.StreamingReader;
 
 public class Test {
     public static void main( String[] als ) throws Exception {
-        
+
         long bef = System.currentTimeMillis();
-        
+
         InputStream is = new FileInputStream( new File( "D:\\VijayShare\\hugeFiles\\ind_as_dump_ihl_salaried_032019.xlsx" ) );
         StreamingReader reader = StreamingReader.builder()
                                                 .rowCacheSize( 10 )    // number of rows to keep in memory (defaults to 10)
@@ -28,18 +27,18 @@ public class Test {
                                                 .sheetIndex( 0 )        // index of sheet to use (defaults to 0)
                                                 .read( is );            // InputStream or File for XLSX file (required)
 
-       
+
         for ( Row r : reader ) {
             for ( Cell c : r ) {
-                
+
             }
         }
-        
+
         reader.close();
         long aft = System.currentTimeMillis();
-        
+
         System.out.println((aft - bef) + " ms.");
-        
+
         /*long bef = System.currentTimeMillis();
 
         MongoClient mongo = new MongoClient( "localhost", 27017 );
@@ -52,9 +51,9 @@ public class Test {
             System.out.println( cursor.next() );
         }
 
-        
-        
-        
+
+
+
         InputStream is = new FileInputStream( new File( "D:\\VijayShare\\Version5\\Performance.xlsx" ) );
 
         StreamingReader reader = StreamingReader.builder()
@@ -62,7 +61,7 @@ public class Test {
                                                 .bufferSize( 1024 )     // buffer size to use when reading InputStream to file (defaults to 1024)
                                                 .sheetIndex( 0 )        // index of sheet to use (defaults to 0)
                                                 .read( is );            // InputStream or File for XLSX file (required)
-        
+
         int rowPtr = 0;
         for ( Row row : reader ) {
             if(rowPtr ++ == 0) continue;
@@ -70,7 +69,7 @@ public class Test {
                     Long LOAN_IDENTIFIER = (long) (row.getCell( 0 ).getNumericCellValue());
                     Date MONTHLY_REPORTING_PERIOD = row.getCell( 1 ).getDateCellValue();
                     String CURRENT_LOAN_DELINQUENCY_STATUS = row.getCell( 10 ).getStringCellValue();
-                    
+
                     BasicDBObject document = new BasicDBObject();
                     document.put("LOAN_IDENTIFIER", LOAN_IDENTIFIER);
                     document.put("MONTHLY_REPORTING_PERIOD", MONTHLY_REPORTING_PERIOD);
@@ -81,50 +80,50 @@ public class Test {
                     //ex.printStackTrace();
                 }
         }
-        
+
         mongo.close();
         reader.close();
-        
+
         long aft = System.currentTimeMillis();
-        
+
         System.out.println((aft - bef) + " ms.");*/
         /*Calendar cal = Calendar.getInstance();
         cal.set( 1900, 0, 1, 0, 0, 0 );
         cal.set( Calendar.MILLISECOND, 0 );
         System.out.println( new java.util.Date( cal.getTimeInMillis() ) );
-        
+
         Calendar cal2 = Calendar.getInstance();
         cal2.set( Calendar.MILLISECOND, 0 );
         cal2.set( 2016, 5, 30, 0, 0, 0 );
-        
+
         cal2.add( Calendar.MONTH, -1 );
-        
+
         System.out.println( new java.util.Date( cal2.getTimeInMillis() ) );
-        
+
         System.out.println( cal2.getTimeInMillis() - cal.getTimeInMillis() );
-        
+
         long daysBetween = ChronoUnit.DAYS.between( cal.toInstant(), cal2.toInstant() ) + 2;
-        
+
         System.out.println( daysBetween );
-        
+
         System.out.println(EDate(getCal(2016, 5, 30), -1));
-        
+
         Calendar cal3 = Calendar.getInstance();
         cal3.set( 2016, 1, 26, 0, 0, 0 );
         cal3.add( Calendar.DAY_OF_MONTH, -42426 );
         System.out.println( cal3 );
-        
+
         System.out.println(pmt( 3/100d, 150, 1500000d ) );
-        
+
         Date d1 = new Date(getCal(2012, 0, 1).getTimeInMillis());
         Date d2 = new Date(getCal(2012, 6, 30).getTimeInMillis());
-        
+
         System.out.println("=>"+YearFracCalculator.calculate( DateUtil.getExcelDate(d1, false), DateUtil.getExcelDate(d2, false), 0 ));
         System.out.println("=>"+YearFracCalculator.calculate( DateUtil.getExcelDate(d1, false), DateUtil.getExcelDate(d2, false), 1 ));
         System.out.println("=>"+YearFracCalculator.calculate( DateUtil.getExcelDate(d1, false), DateUtil.getExcelDate(d2, false), 3 ));
-        
+
         System.out.println("->" + Math.pow(4.0, 2));
-        
+
         System.out.println("->>" + DateDiff(getCal(2019, 0, 1), getCal(2019, 1, 28), "d"));
         System.out.println("->>" + DateDiff(getCal(2019, 0, 1), getCal(2019, 1, 28), "m"));*/
 
@@ -207,7 +206,7 @@ return pmt( r, nper, pv, fv ) - ipmt( r, per, nper, pv, fv );
   static public double ppmt( double r, int per, int nper, double pv ) {
 return pmt( r, nper, pv ) - ipmt( r, per, nper, pv );
   }
-  
+
   static public double fv(double r, int nper, double pmt, double pv, int type) {
 double fv = -(pv * Math.pow(1 + r, nper) + pmt * (1+r*type) * (Math.pow(1 + r, nper) - 1) / r);
 return fv;
@@ -239,9 +238,9 @@ import com.monitorjbl.xlsx.StreamingReader;
 
 public class Test {
     public static void main( String[] als ) throws Exception {
-        
+
         long bef = System.currentTimeMillis();
-        
+
         InputStream is = new FileInputStream( new File( "D:\\VijayShare\\hugeFiles\\ind_as_dump_ihl_salaried_032019.xlsx" ) );
         StreamingReader reader = StreamingReader.builder()
                                                 .rowCacheSize( 10 )    // number of rows to keep in memory (defaults to 10)
@@ -249,18 +248,18 @@ public class Test {
                                                 .sheetIndex( 0 )        // index of sheet to use (defaults to 0)
                                                 .read( is );            // InputStream or File for XLSX file (required)
 
-       
+
         for ( Row r : reader ) {
             for ( Cell c : r ) {
-                
+
             }
         }
-        
+
         reader.close();
         long aft = System.currentTimeMillis();
-        
+
         System.out.println((aft - bef) + " ms.");
-        
+
         /*long bef = System.currentTimeMillis();
 
         MongoClient mongo = new MongoClient( "localhost", 27017 );
@@ -273,9 +272,9 @@ public class Test {
             System.out.println( cursor.next() );
         }
 
-        
-        
-        
+
+
+
         InputStream is = new FileInputStream( new File( "D:\\VijayShare\\Version5\\Performance.xlsx" ) );
 
         StreamingReader reader = StreamingReader.builder()
@@ -283,7 +282,7 @@ public class Test {
                                                 .bufferSize( 1024 )     // buffer size to use when reading InputStream to file (defaults to 1024)
                                                 .sheetIndex( 0 )        // index of sheet to use (defaults to 0)
                                                 .read( is );            // InputStream or File for XLSX file (required)
-        
+
         int rowPtr = 0;
         for ( Row row : reader ) {
             if(rowPtr ++ == 0) continue;
@@ -291,7 +290,7 @@ public class Test {
                     Long LOAN_IDENTIFIER = (long) (row.getCell( 0 ).getNumericCellValue());
                     Date MONTHLY_REPORTING_PERIOD = row.getCell( 1 ).getDateCellValue();
                     String CURRENT_LOAN_DELINQUENCY_STATUS = row.getCell( 10 ).getStringCellValue();
-                    
+
                     BasicDBObject document = new BasicDBObject();
                     document.put("LOAN_IDENTIFIER", LOAN_IDENTIFIER);
                     document.put("MONTHLY_REPORTING_PERIOD", MONTHLY_REPORTING_PERIOD);
@@ -302,50 +301,50 @@ public class Test {
                     //ex.printStackTrace();
                 }
         }
-        
+
         mongo.close();
         reader.close();
-        
+
         long aft = System.currentTimeMillis();
-        
+
         System.out.println((aft - bef) + " ms.");*/
         /*Calendar cal = Calendar.getInstance();
         cal.set( 1900, 0, 1, 0, 0, 0 );
         cal.set( Calendar.MILLISECOND, 0 );
         System.out.println( new java.util.Date( cal.getTimeInMillis() ) );
-        
+
         Calendar cal2 = Calendar.getInstance();
         cal2.set( Calendar.MILLISECOND, 0 );
         cal2.set( 2016, 5, 30, 0, 0, 0 );
-        
+
         cal2.add( Calendar.MONTH, -1 );
-        
+
         System.out.println( new java.util.Date( cal2.getTimeInMillis() ) );
-        
+
         System.out.println( cal2.getTimeInMillis() - cal.getTimeInMillis() );
-        
+
         long daysBetween = ChronoUnit.DAYS.between( cal.toInstant(), cal2.toInstant() ) + 2;
-        
+
         System.out.println( daysBetween );
-        
+
         System.out.println(EDate(getCal(2016, 5, 30), -1));
-        
+
         Calendar cal3 = Calendar.getInstance();
         cal3.set( 2016, 1, 26, 0, 0, 0 );
         cal3.add( Calendar.DAY_OF_MONTH, -42426 );
         System.out.println( cal3 );
-        
+
         System.out.println(pmt( 3/100d, 150, 1500000d ) );
-        
+
         Date d1 = new Date(getCal(2012, 0, 1).getTimeInMillis());
         Date d2 = new Date(getCal(2012, 6, 30).getTimeInMillis());
-        
+
         System.out.println("=>"+YearFracCalculator.calculate( DateUtil.getExcelDate(d1, false), DateUtil.getExcelDate(d2, false), 0 ));
         System.out.println("=>"+YearFracCalculator.calculate( DateUtil.getExcelDate(d1, false), DateUtil.getExcelDate(d2, false), 1 ));
         System.out.println("=>"+YearFracCalculator.calculate( DateUtil.getExcelDate(d1, false), DateUtil.getExcelDate(d2, false), 3 ));
-        
+
         System.out.println("->" + Math.pow(4.0, 2));
-        
+
         System.out.println("->>" + DateDiff(getCal(2019, 0, 1), getCal(2019, 1, 28), "d"));
         System.out.println("->>" + DateDiff(getCal(2019, 0, 1), getCal(2019, 1, 28), "m"));*/
 
@@ -428,7 +427,7 @@ return pmt( r, nper, pv, fv ) - ipmt( r, per, nper, pv, fv );
   static public double ppmt( double r, int per, int nper, double pv ) {
 return pmt( r, nper, pv ) - ipmt( r, per, nper, pv );
   }
-  
+
   static public double fv(double r, int nper, double pmt, double pv, int type) {
 double fv = -(pv * Math.pow(1 + r, nper) + pmt * (1+r*type) * (Math.pow(1 + r, nper) - 1) / r);
 return fv;
@@ -440,4 +439,3 @@ static public double fv(double r, int nper, double c, double pv) {
 //  https://apache.googlesource.com/poi/+/4d81d34d5d566cb22f21999e653a5829cc678ed5/src/java/org/apache/poi/ss/formula/functions/Finance.java
 //  https://jar-download.com/artifacts/org.apache.poi/poi/4.0.0/source-code/org/apache/poi/ss/formula/atp/YearFracCalculator.java
 }
->>>>>>> 6305cb0c7c13b89ea3eaccb81307cde3c1ff4349
