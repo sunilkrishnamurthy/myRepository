@@ -1,3 +1,7 @@
+start mongo with logging
+mongod.exe --logpath D:\Mongo\logs\log.txt
+
+
 100161217377	3/1/2015	A
 100161217377	6/1/2015	A
 100161217377	9/1/2015	A
@@ -10,12 +14,14 @@
 100161217377	6/1/2017	A
 100161217377	9/1/2017	A
 100161217377	12/1/2017	A
+
 100184875206	3/1/2015	A
 100184875206	6/1/2015	A
 100184875206	9/1/2015	A
 100184875206	12/1/2015	A
 100184875206	3/1/2016	B
 100184875206	6/1/2016	C
+
 100254873222	3/1/2015	A
 100254873222	6/1/2015	A
 100254873222	9/1/2015	A
@@ -106,19 +112,48 @@ db.performance.insert({"LOAN_IDENTIFIER":100404088327, "MONTHLY_REPORTING_PERIOD
 db.performance.insert({"LOAN_IDENTIFIER":100404088327, "MONTHLY_REPORTING_PERIOD": new Date(1, 12, 2018), "CURRENT_LOAN_DELINQUENCY_STATUS":"A"})
 
 
-
 var mapFunction1 = function() {
 	emit(this.LOAN_IDENTIFIER, {MONTHLY_REPORTING_PERIOD: this.MONTHLY_REPORTING_PERIOD, CURRENT_LOAN_DELINQUENCY_STATUS: this.CURRENT_LOAN_DELINQUENCY_STATUS});
-	
 };
 
+
 var reduceFunction1 = function(loan, loanDtl) {
-	var count = 0;
+	print("------------>>>>>>>>>>>");
+	loanDtl.sort();
+	var prev = "Z";
+	var curr = "Z";
+	
+	var AA = 0;
+	var AB = 0;
+	var BA = 0;
+	var BB = 0;
+	
 	for (var idx = 0; idx < loanDtl.length; idx++) {
-		count ++;
+		
+		if(prev == "Z"){
+			prev = loanDtl[idx].CURRENT_LOAN_DELINQUENCY_STATUS;
+			continue;
+		}
+		
+		curr = loanDtl[idx].CURRENT_LOAN_DELINQUENCY_STATUS;
+		
+		if(prev == "A"){
+			if(curr == "A"){
+				AA ++;
+			} else if(curr == "B"){
+				AB ++;
+			}
+		} else if(prev == "B"){
+			if(curr == "A"){
+				BA ++;
+			} else if(curr == "B"){
+				BB ++;
+			}
+		}
+		
 	}
 	
-	return ({LOAN_IDENTIFIER: loan, count: count});
+	return ({LOAN_IDENTIFIER: loan, AA: AA, AB: AB, BA: BA, BB: BB});
 };
 
 db.performance.mapReduce(
@@ -128,3 +163,5 @@ db.performance.mapReduce(
 )
 
 db.performance_out.find()
+
+
