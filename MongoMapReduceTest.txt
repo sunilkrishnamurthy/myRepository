@@ -38,6 +38,7 @@ mongod.exe --logpath D:\Mongo\logs\log.txt
 100254873222	6/1/2018	A
 100254873222	9/1/2018	A
 100254873222	12/1/2018	A
+
 100404088327	3/1/2015	A
 100404088327	6/1/2015	A
 100404088327	9/1/2015	A
@@ -118,43 +119,39 @@ var mapFunction1 = function() {
 
 
 var reduceFunction1 = function(loan, loanDtl) {
-	print("------------>>>>>>>>>>>");
+	var bkt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	loanDtl.sort();
 	var prev = "Z";
 	var curr = "Z";
+	var tm = new Array(8);
+	var i=0; 
+	var j=0;
 	
-	var AA = 0;
-	var AB = 0;
-	var BA = 0;
-	var BB = 0;
-	
+	for (i=0; i<8; i++){ tm[i]=new Array(8);}
+	for (i=0; i<8; i++){ for (j=0; j<8; j++){  tm[i][j] = 0; } }
 	for (var idx = 0; idx < loanDtl.length; idx++) {
-		
 		if(prev == "Z"){
 			prev = loanDtl[idx].CURRENT_LOAN_DELINQUENCY_STATUS;
 			continue;
 		}
-		
 		curr = loanDtl[idx].CURRENT_LOAN_DELINQUENCY_STATUS;
 		
-		if(prev == "A"){
-			if(curr == "A"){
-				AA ++;
-			} else if(curr == "B"){
-				AB ++;
-			}
-		} else if(prev == "B"){
-			if(curr == "A"){
-				BA ++;
-			} else if(curr == "B"){
-				BB ++;
-			}
+		var rIndex = bkt.indexOf(prev);
+		var cIndex = bkt.indexOf(curr);
+		
+		print(loan + " " + prev + " " + curr + " " + rIndex + " " + cIndex);
+		if(rIndex != -1 && cIndex != -1){
+			tm[rIndex][cIndex] ++;
 		}
 		
+		prev = curr;
 	}
+	for (i=0; i<3; i++){ for (j=0; j<3; j++){  print("val="+tm[i][j] ); } }
+	return ({LOAN_IDENTIFIER: loan, tm});
 	
-	return ({LOAN_IDENTIFIER: loan, AA: AA, AB: AB, BA: BA, BB: BB});
 };
+
+
 
 db.performance.mapReduce(
 	mapFunction1,
