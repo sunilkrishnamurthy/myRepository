@@ -2,12 +2,9 @@ package com.finicspro.processing.excel;
 
 import static org.apache.poi.ss.formula.functions.Finance.*;
 import java.util.*;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 
 import org.apache.hadoop.fs.FsUrlStreamHandlerFactory;
@@ -19,8 +16,25 @@ import org.apache.poi.ss.usermodel.*;
 import com.mongodb.*;
 import com.monitorjbl.xlsx.StreamingReader;
 import java.io.*;
+import java.nio.file.Paths;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import com.google.common.base.*;
+
 
 public class Test {
+
+    private static LocalDate toDate( String s_inputDt ) {
+        String[] split = s_inputDt.split( "/" );
+
+        java.util.Date inputDt = new java.util.Date( Integer.parseInt( split[2] ) - 1900, Integer.parseInt( split[1] ) - 1,
+                                                     Integer.parseInt( split[0] ) );
+        return inputDt.toInstant().atZone( ZoneId.systemDefault() ).toLocalDate();
+    }
+
     public static void main( String[] als ) throws Exception {
 
 
@@ -44,7 +58,101 @@ public class Test {
         }
         in.close();*/
 
+        /*String filePath = "D:\\VijayShare\\Version6\\Performance_2000Q2.txt";
+        Path path = Paths.get(filePath);
 
+        FileChannel fileChannel =  FileChannel.open(path);
+        ByteBuffer buffer = ByteBuffer.allocate(6);
+        int noOfBytesRead = fileChannel.read(buffer);
+        int ttl = 0;
+
+        PrintWriter out = new PrintWriter(new FileOutputStream("D:\\temp\\perf.psv"));
+        while (noOfBytesRead != -1) {
+            //System.out.println("Number of bytes read: " + noOfBytesRead);
+            buffer.flip();
+            //System.out.print("Buffer contents: ");
+
+            while (buffer.hasRemaining()) {
+                char c = (char) buffer.get();
+                System.out.print(c);
+                out.write( c );
+            }
+
+            //System.out.println(" ");
+            buffer.clear();
+            noOfBytesRead = fileChannel.read(buffer);
+
+            ttl += noOfBytesRead;
+
+            if(ttl >= 1024*1024) break;
+        }
+        fileChannel.close();
+        out.close();*/
+
+        long befT = System.currentTimeMillis();
+        Map<String, ArrayList<PerfData>> map = new HashMap<String, ArrayList<PerfData>>( 1000000 );
+        String buckets = "ABBCCCDDDEEE";
+
+        Path path = FileSystems.getDefault().getPath( "D:\\VijayShare\\Version6\\", "Performance_2000Q2.txt" ); // reading Performance_2000Q2.txt took 127560 ms
+        Files.lines( path ).forEach( line -> {
+            List<String> lst = Splitter.on( '|' ).trimResults().splitToList( line );
+
+            String loan = lst.get( 0 );
+            String period = lst.get( 1 );
+            int stts = 0;
+            try {
+                stts = Integer.parseInt( lst.get( 10 ) );
+            } catch( NumberFormatException ex1 ) {
+            }
+
+            LocalDate tempLd = toDate( period );
+            String s_bkt = "F";
+            try {
+                 s_bkt = buckets.charAt( stts )+"";
+            } catch( Exception ex ) {
+            }
+
+            PerfData pd = new PerfData( loan, s_bkt, tempLd );
+
+            if ( map.containsKey( loan ) ) {
+                map.get( loan ).add( pd );
+            } else {
+                ArrayList<PerfData> al = new ArrayList<>();
+                al.add( pd );
+                map.put( loan, al );
+            }
+        } );
+
+        int[][] observationMatrix = new int[8][8];
+
+        for ( String loan : map.keySet() ) {
+
+            ArrayList<PerfData> al = map.get( loan );
+            Collections.sort( al );
+            char prev, curr;
+            if ( al.size() > 1 )
+                for ( int i = 0, j = al.size() - 1; i < j; i++ ) {
+                    prev = al.get( i ).stts.charAt( 0 );
+                    curr = al.get( i + 1 ).stts.charAt( 0 );
+
+                    try {
+                        observationMatrix[( (char)prev ) - 65][( (char)curr ) - 65]++;
+                    } catch( Exception | Error er ) {
+                        //ex.printStackTrace();
+                    }
+
+                }
+        }
+
+        System.out.println("map.size: " + map.size());
+
+        printMatrix( observationMatrix );
+
+        long aftT = System.currentTimeMillis();
+
+        System.out.println( ( aftT - befT ) + " ms" );
+        if ( true )
+            return;
 
         /*Comparator<Person> compareByName = Comparator.comparing( ( Person p ) -> p.firstName )
                                                  .thenComparingInt( p -> p.age );*/
@@ -54,7 +162,7 @@ public class Test {
 
         MongoClient mongo = new MongoClient( "localhost", 27017 );
         DB db = mongo.getDB( "Acadgild" );
-        DBCollection table = db.getCollection("performance");
+        DBCollection table = db.getCollection( "performance" );
 
         /*StreamingReader reader = StreamingReader.builder()
                                                 .rowCacheSize( 100 )    // number of rows to keep in memory (defaults to 10)
@@ -63,9 +171,9 @@ public class Test {
                                                 .read( is );            // InputStream or File for XLSX file (required)
                                                 */
 
-        InputStream is = new FileInputStream(new File("D:\\VijayShare\\Version5\\Performance.xlsx"));
-        Workbook workbook = StreamingReader.builder().open(is);
-        Sheet sheet = workbook.getSheetAt(0);
+        InputStream is = new FileInputStream( new File( "D:\\temp\\Performance.xlsx" ) );
+        Workbook workbook = StreamingReader.builder().open( is );
+        Sheet sheet = workbook.getSheetAt( 0 );
 
         for ( Row r : sheet ) {
             try {
@@ -74,10 +182,10 @@ public class Test {
                 Cell CURRENT_LOAN_DELINQUENCY_STATUS = r.getCell( 10 );
 
                 BasicDBObject document = new BasicDBObject();
-                document.put("LOAN_IDENTIFIER", LOAN_IDENTIFIER.getStringCellValue());
-                document.put("MONTHLY_REPORTING_PERIOD", MONTHLY_REPORTING_PERIOD.getDateCellValue());
-                document.put("CURRENT_LOAN_DELINQUENCY_STATUS", CURRENT_LOAN_DELINQUENCY_STATUS.getStringCellValue());
-                table.insert(document);
+                document.put( "LOAN_IDENTIFIER", LOAN_IDENTIFIER.getStringCellValue() );
+                document.put( "MONTHLY_REPORTING_PERIOD", MONTHLY_REPORTING_PERIOD.getDateCellValue() );
+                document.put( "CURRENT_LOAN_DELINQUENCY_STATUS", CURRENT_LOAN_DELINQUENCY_STATUS.getStringCellValue() );
+                table.insert( document );
             } catch( Exception ex ) {
                 ex.printStackTrace();
             }
@@ -212,6 +320,15 @@ public class Test {
         noOfMonths = 12 / frequency;
         periods = (int)DateDiff( issueDate, maturityDate, "m" ) / noOfMonths;
         //endDate = EDate(issueDate, periods * noOfMonths);
+    }
+
+    static void printMatrix( int[][] matrix ) {
+        for ( int i = 0; i < matrix.length; i++ ) {
+            for ( int j = 0; j < matrix[i].length; j++ ) {
+                System.out.print( matrix[i][j] + "," );
+            }
+            System.out.println( "\n" );
+        }
     }
 
 /*
