@@ -193,3 +193,70 @@ for (i=0; i<8; i++){
 		print(perfMatrix[i][j]); 
 	} 
 }
+
+
+
+-------------------
+
+attempt 3
+java code
+Path path = FileSystems.getDefault().getPath( "D:\\temp", "perf1.psv" ); // reading Performance_2000Q2.txt took 127560 ms
+        Files.lines( path ).forEach( line -> {
+            try {
+                List<String> lst = Splitter.on( '|' ).trimResults().splitToList( line );
+
+                String loan = lst.get( 0 );
+                String period = lst.get( 1 );
+                int stts = 0;
+                try {
+                    stts = Integer.parseInt( lst.get( 10 ) );
+                } catch( NumberFormatException ex1 ) {
+                }
+                           
+                LocalDate tempLd = toDate( period );
+                String s_bkt = "F";
+                try {
+                     s_bkt = buckets.charAt( stts )+"";
+                } catch( Exception ex ) {
+                }
+                
+                DBObject findQuery = new BasicDBObject("_id", loan);
+                
+                DBObject listItem = new BasicDBObject("loanData", new BasicDBObject("reportingPeriod", tempLd).append("status", s_bkt));
+                DBObject updateQuery = new BasicDBObject("$push", listItem);
+                table.update(findQuery, updateQuery, true, true);
+            } catch( Exception ex ) {
+                ex.printStackTrace();
+            }
+
+            
+        } );
+        
+        
+data
+{ "_id" : "100004032510", "loanData" : [ { "reportingPeriod" : ISODate("2000-01-06T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2000-01-05T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-10T00:00:00Z"), "status" : "D" }, { "reportingPeriod" : ISODate("2000-01-07T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2000-01-08T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2000-01-09T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2000-01-11T00:00:00Z"), "status" : "E" }, { "reportingPeriod" : ISODate("2000-01-12T00:00:00Z"), "status" : "E" }, { "reportingPeriod" : ISODate("2001-01-03T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2001-01-01T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2001-01-02T00:00:00Z"), "status" : "B" } ] }
+{ "_id" : "100004547910", "loanData" : [ { "reportingPeriod" : ISODate("2000-01-11T00:00:00Z"), "status" : "D" }, { "reportingPeriod" : ISODate("2000-01-05T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-07T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2000-01-06T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-08T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2000-01-12T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-09T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2000-01-10T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2001-01-01T00:00:00Z"), "status" : "A" } ] }
+{ "_id" : "100008709521", "loanData" : [ { "reportingPeriod" : ISODate("2000-01-09T00:00:00Z"), "status" : "E" }, { "reportingPeriod" : ISODate("2000-01-10T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-05T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-06T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2000-01-12T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-07T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2000-01-08T00:00:00Z"), "status" : "D" }, { "reportingPeriod" : ISODate("2000-01-11T00:00:00Z"), "status" : "A" } ] }
+
+
+var tm = new Array(8);
+
+for (var i = 0; i < tm.length; i++) {
+  tm[i] = new Array(8);
+}
+
+for (var i = 0; i < 8; i++) {
+for (var j = 0; j < 8; j++) {
+  tm[i][j] = 0;
+}
+}
+
+
+db.performance.distinct("_id").forEach(function(eachLoan){ 
+db.performance.find({_id: eachLoan}).forEach(function(eachRec){
+	
+	for(var c=0; c<eachRec.loanData.length; c++){
+		print(eachRec.loanData[c].status);
+	}
+});
+});
