@@ -238,7 +238,7 @@ data
 { "_id" : "100004547910", "loanData" : [ { "reportingPeriod" : ISODate("2000-01-11T00:00:00Z"), "status" : "D" }, { "reportingPeriod" : ISODate("2000-01-05T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-07T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2000-01-06T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-08T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2000-01-12T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-09T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2000-01-10T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2001-01-01T00:00:00Z"), "status" : "A" } ] }
 { "_id" : "100008709521", "loanData" : [ { "reportingPeriod" : ISODate("2000-01-09T00:00:00Z"), "status" : "E" }, { "reportingPeriod" : ISODate("2000-01-10T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-05T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-06T00:00:00Z"), "status" : "B" }, { "reportingPeriod" : ISODate("2000-01-12T00:00:00Z"), "status" : "A" }, { "reportingPeriod" : ISODate("2000-01-07T00:00:00Z"), "status" : "C" }, { "reportingPeriod" : ISODate("2000-01-08T00:00:00Z"), "status" : "D" }, { "reportingPeriod" : ISODate("2000-01-11T00:00:00Z"), "status" : "A" } ] }
 
-
+var b = new Date().getTime();
 var tm = new Array(8);
 
 for (var i = 0; i < tm.length; i++) {
@@ -254,9 +254,33 @@ for (var j = 0; j < 8; j++) {
 
 db.performance.distinct("_id").forEach(function(eachLoan){ 
 db.performance.find({_id: eachLoan}).forEach(function(eachRec){
-	
-	for(var c=0; c<eachRec.loanData.length; c++){
-		print(eachRec.loanData[c].status);
+	var prev = "";
+	var curr = "";
+	if(eachRec.loanData.length > 1)
+	for(var c=0; c<eachRec.loanData.length - 1; c++){
+		//print(eachRec.loanData[c].status);
+		prev = eachRec.loanData[c].status;
+		curr = eachRec.loanData[c+1].status;
+		//print(eachLoan + " >" + prev + " >" + curr);
+		try {
+			tm[prev.charCodeAt(0) - 65][curr.charCodeAt(0) - 65]++;
+		} catch( err ) {
+		}
 	}
 });
 });
+
+
+for (var i = 0; i < 8; i++) {
+	for (var j = 0; j < 8; j++) {
+		print(tm[i][j]);
+	}
+	print("");
+}
+
+var a = new Date().getTime();
+print(a-b);
+
+javascript took 146608ms to run
+
+processing the file D:\\VijayShare\\Version6\\Performance_2000Q2.txt // took writing to mongo took 2065969 ms ie 35 mins;  no of records in mongo is 274339
